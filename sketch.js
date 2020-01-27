@@ -40,13 +40,17 @@ function setup() {
 		new ConnectionGene(2, 4,   1, true, 3)
 	]);
 
-	let newNetwork = Network.cross(network2, network);
+	// let newNetwork = Network.cross(network2, network);
 
-	console.log(newNetwork);
+	console.table(network2.clone().connections);
+
+	network2.mutate();
+
+	console.table(network2.connections);
 	
-	newNetwork.buildNetwork();
+	// newNetwork.buildNetwork();
 
-	console.log(newNetwork.feedForward([1,2]))
+	// console.log(newNetwork.feedForward([1,2]))
 }
 
 function draw() {

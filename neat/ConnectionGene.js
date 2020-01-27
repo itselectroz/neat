@@ -9,7 +9,11 @@ class ConnectionGene {
 
     toggle() {
         this.enabled = !this.enabled;
-    }
+	}
+	
+	disable() {
+		this.enabled = false;
+	}
 
     clone() {
         return new this.constructor(this.in.clone(), this.out.clone(), this.weight, this.enabled, this.innovation);

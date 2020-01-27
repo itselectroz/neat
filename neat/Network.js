@@ -61,21 +61,25 @@ class Network extends Genome {
                 console.log(`Done ${weightedSum} -> ${neuron.result}`);
 
                 for(let i = 0; i < neuron.out.length; i++) {
-                    let outconn = neuron.out[i];
-                    let out = this.neurons[outconn.out.id];
-                    console.log("adding: ", out);
-                    out.in.push(neuron.result * outconn.weight);
-                    stack.unshift(out);
+					let outconn = neuron.out[i];
+					if(outconn.enabled) {
+						let out = this.neurons[outconn.out.id];
+						console.log("adding: ", out);
+						out.in.push(neuron.result * outconn.weight);
+						stack.unshift(out);
+					}
                 }
             }
 
             if((neuron.type == 0 || neuron.type == 1) && neuron.done == true) {
                 for(let i = 0; i < neuron.out.length; i++) {
-                    let outconn = neuron.out[i];
-                    let out = this.neurons[outconn.out.id];
-                    console.log("adding: ", out);
-                    out.in.push(neuron.result * outconn.weight);
-                    stack.unshift(out);
+					let outconn = neuron.out[i];
+					if(outconn.enabled) {
+						let out = this.neurons[outconn.out.id];
+						console.log("adding: ", out);
+						out.in.push(neuron.result * outconn.weight);
+						stack.unshift(out);
+					}
                 }
             }
             else if(!neuron.done) {
@@ -100,7 +104,69 @@ class Network extends Genome {
         network.fitness = this.fitness;
         network.generation = this.generation;
         return network;
-    }
+	}
+	
+	mutate() {
+		if(Math.random() < 0.2) {
+			let rand = Math.floor(Math.random()*4);
+			
+			if(rand == 0) {
+				// Toggle connection
+				let randConn = this.connections[Math.floor(Math.random() * this.connections.length)];
+				randConn.toggle();
+			}
+			else if(rand == 1) {
+				// Shift weight
+				let direction = Math.random() > 0.5 ? 0.1 : -0.1;
+				let randConn = this.connections[Math.floor(Math.random() * this.connections.length)];
+				randConn.weight *= (1 + direction);
+			}
+			else if(rand == 2) {
+				// New node
+				let randConn = this.connections[Math.floor(Math.random() * this.connections.length)];
+				randConn.disable();
+
+				let nnode = new Node(this.nodes[this.nodes.length - 1].id + 1, 2);
+				this.addNode(nnode);
+				let maxInno = this.connections[this.connections.length - 1].innovation;
+				let conn1 = new ConnectionGene(randConn.in, nnode, 1, true, maxInno + 1);
+				let conn2 = new ConnectionGene(nnode, randConn.out, randConn.weight, true, maxInno + 2);
+				this.addConnection(conn1);
+				this.addConnection(conn2);
+			}
+			else if(rand == 3) {
+				let maxTries = 10;
+
+				while(maxTries-- > 0) {
+					let pFrom = this.nodes.filter(x => (x.type == 0 || x.type == 2));
+					let from = pFrom[Math.floor(Math.random() * pFrom.length)];
+					let pTo = this.nodes.filter(x => (x.id != from.id && (x.type == 2 || x.type == 3)));
+					let to = pTo[Math.floor(Math.random() * pTo.length)];
+
+					if(this.validateConnection(from, to.id)) {
+						let newConn = new ConnectionGene(from, to, Math.random()*2 - 1, true, this.connections[this.connections.length - 1].innovation + 1);
+						this.addConnection(newConn);
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	validateConnection(node, id) {
+		let connections = this.connections.filter(x => (x.in.id == node.id));
+		for(let i = 0; i < connections.length; i++) {
+			let conn = connections[i];
+
+			if(conn.out.id == id)
+				return false;
+			
+			if(!this.validateConnection(conn.out, id)) 
+				return false;
+		}
+
+		return true;
+	}
 
     static cross(a,b) {  
         let genome = new Network();
@@ -128,7 +194,6 @@ class Network extends Genome {
             }
         }
 
-        console.log(ib, ia);
         if(ia < a.connections.length) {
             for(let i = ia; i < a.connections.length; i++) {
                 genome.addConnection(a.connections[i].clone());
