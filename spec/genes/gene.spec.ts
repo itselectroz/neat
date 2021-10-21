@@ -10,5 +10,5 @@ describe('genes/gene.ts', () => {
 
             expect(gene.innovation).toEqual(innovation_number);
         });
-    })
-})
+    });
+});

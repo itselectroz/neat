@@ -30,5 +30,5 @@ describe('genes/node-gene.ts', () => {
                 expect(nodeGeneB.equals(nodeGeneA)).toBeFalse();
             });
         });
-    })
-})
+    });
+});
