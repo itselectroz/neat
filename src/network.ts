@@ -59,7 +59,7 @@ export class Network {
         return outputs;
     }
 
-    static buildNetwork(genome: Genome) {
+    static buildNetwork(genome: Genome) : Network {
         const nodeMap: NodeMap = {};
 
         for(const node of genome.nodes) {

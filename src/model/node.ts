@@ -20,7 +20,7 @@ export class Node {
         this.inputConnections.push(connection);
     }
 
-    activate() {
+    activate() : void {
         let sum = 0;
         for(let i = 0; i < this.inputConnections.length; i++) {
             const connection = this.inputConnections[i];
