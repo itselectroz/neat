@@ -1,5 +1,4 @@
-import { ConnectionGene } from "../../src/genes/connection-gene";
-import { NodeGene } from "../../src/genes/node-gene";
+import { ConnectionGene, NodeGene } from "../../src/genes";
 
 describe('genes/connection-gene.ts', () => {
     describe('ConnectionGene', () => {

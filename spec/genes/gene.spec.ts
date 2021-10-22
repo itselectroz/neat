@@ -1,4 +1,4 @@
-import { Gene } from "../../src/genes/gene";
+import { Gene } from "../../src/genes";
 
 describe('genes/gene.ts', () => {
     describe('Gene', () => {

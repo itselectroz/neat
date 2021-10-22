@@ -1,3 +1,4 @@
+import { sigmoid } from "../util/activation-functions";
 import { Connection } from "./connection";
 
 export class Node {
@@ -5,6 +6,8 @@ export class Node {
 
     output: number;
     inputConnections: Connection[];
+
+    activation_function: (input: number) => number = sigmoid;
 
     constructor(level: number) {
         this.level = level;
@@ -15,5 +18,16 @@ export class Node {
     
     addConnection(connection: Connection) : void {
         this.inputConnections.push(connection);
+    }
+
+    activate() {
+        let sum = 0;
+        for(let i = 0; i < this.inputConnections.length; i++) {
+            const connection = this.inputConnections[i];
+            if(connection.enabled) {
+                sum += connection.inputNode.output * connection.weight;
+            }
+        }
+        this.output = this.activation_function(sum);
     }
 }
